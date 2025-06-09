@@ -217,8 +217,10 @@
         function updateLocalPaymentInfo(currency) {
             const eurText = 'Local bank transfers (e.g., SEPA, iDEAL, Sofort) may be available on the Stripe payment page for EUR.';
             const usdText = 'Local bank transfers (e.g., ACH) may be available on the Stripe payment page for USD.';
+            const gbpText = 'Donors from China may choose GBP for payment in Alipay and WeChat Pay.';
             if (currency === 'eur') { localPaymentInfo.textContent = eurText; localPaymentInfo.classList.remove('hidden'); }
             else if (currency === 'usd') { localPaymentInfo.textContent = usdText; localPaymentInfo.classList.remove('hidden'); }
+            else if (currency === 'gbp') { localPaymentInfo.textContent = gbpText; localPaymentInfo.classList.remove('hidden'); }
             else { localPaymentInfo.classList.add('hidden'); }
         }
         updateLocalPaymentInfo(currencySelect.value);
