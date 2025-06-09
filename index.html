@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Our Cause - Donate Now</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-light: #f0f2f5;
+            --card-bg-light: #ffffff;
+            --text-primary-light: #1f2937;
+            --text-secondary-light: #4b5563;
+            --text-tertiary-light: #6b7280;
+            --input-border-light: #e0e0e0;
+            --input-bg-light: #ffffff;
+            --button-primary-bg-light: #5856d6;
+            --button-primary-hover-bg-light: #3d3ca7;
+            --info-bg-light: #e3f2fd;
+            --info-text-light: #1e88e5;
+            --error-text-light: #d32f2f;
+            --loader-overlay-bg-light: rgba(255, 255, 255, 0.8);
+            --loader-text-light: #1f2937;
+
+            --bg-dark: #1c1c1e;
+            --card-bg-dark: #2c2c2e;
+            --text-primary-dark: #f2f2f7;
+            --text-secondary-dark: #aeaeb2;
+            --text-tertiary-dark: #8e8e93;
+            --input-border-dark: #48484a;
+            --input-bg-dark: #3a3a3c;
+            --button-primary-bg-dark: #5e5ce6;
+            --button-primary-hover-bg-dark: #4947d1;
+            --info-bg-dark: #2a3b4d;
+            --info-text-dark: #64b5f6;
+            --error-text-dark: #ff8a80;
+            --loader-overlay-bg-dark: rgba(30, 30, 32, 0.85);
+            --loader-text-dark: #f2f2f7;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            background-color: var(--bg-light);
+            color: var(--text-primary-light);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .dark body { background-color: var(--bg-dark); color: var(--text-primary-dark); }
+        .card {
+            background-color: var(--card-bg-light); border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); padding: 2rem;
+            transition: background-color 0.3s ease;
+        }
+        .dark .card { background-color: var(--card-bg-dark); box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }
+        .button-primary {
+            font-weight: 500; padding: 0.75rem 1.5rem; border-radius: 10px;
+            background-color: var(--button-primary-bg-light); color: white;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease; letter-spacing: 0.02em;
+        }
+        .dark .button-primary { background-color: var(--button-primary-bg-dark); }
+        .button-primary:hover { background-color: var(--button-primary-hover-bg-light); box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+        .dark .button-primary:hover { background-color: var(--button-primary-hover-bg-dark); }
+        .button-primary:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .input-field, .select-field, .textarea-field {
+            border: 1px solid var(--input-border-light); background-color: var(--input-bg-light);
+            color: var(--text-primary-light); border-radius: 8px; padding: 0.75rem 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+            width: 100%;
+        }
+        .dark .input-field, .dark .select-field, .dark .textarea-field {
+            border-color: var(--input-border-dark); background-color: var(--input-bg-dark);
+            color: var(--text-primary-dark);
+        }
+        .input-field::placeholder, .textarea-field::placeholder { color: var(--text-tertiary-light); }
+        .dark .input-field::placeholder, .dark .textarea-field::placeholder { color: var(--text-tertiary-dark); }
+        .input-field:focus, .select-field:focus, .textarea-field:focus {
+            border-color: var(--button-primary-bg-light); box-shadow: 0 0 0 2px rgba(88, 86, 214, 0.2);
+            outline: none;
+        }
+        .dark .input-field:focus, .dark .select-field:focus, .dark .textarea-field:focus {
+            border-color: var(--button-primary-bg-dark); box-shadow: 0 0 0 2px rgba(94, 92, 230, 0.25);
+        }
+        .select-field {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e8e93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1.5em 1.5em;
+        }
+        .dark .select-field {
+             background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23aeaeb2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+        }
+        .error-message { color: var(--error-text-light); font-size: 0.875rem; margin-top: 0.5rem; }
+        .dark .error-message { color: var(--error-text-dark); }
+        .info-box {
+            background-color: var(--info-bg-light); color: var(--info-text-light);
+            padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.875rem; margin-top: 0.5rem;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .dark .info-box { background-color: var(--info-bg-dark); color: var(--info-text-dark); }
+        .text-primary { color: var(--text-primary-light); }
+        .dark .text-primary { color: var(--text-primary-dark); }
+        .text-secondary { color: var(--text-secondary-light); }
+        .dark .text-secondary { color: var(--text-secondary-dark); }
+        .text-tertiary { color: var(--text-tertiary-light); }
+        .dark .text-tertiary { color: var(--text-tertiary-dark); }
+        .theme-toggle {
+            background-color: var(--input-bg-light); color: var(--text-primary-light);
+            border: 1px solid var(--input-border-light); border-radius: 8px;
+            padding: 0.5rem 0.75rem; cursor: pointer; transition: all 0.3s ease; font-size: 0.875rem;
+        }
+        .dark .theme-toggle {
+            background-color: var(--input-bg-dark); color: var(--text-primary-dark);
+            border-color: var(--input-border-dark);
+        }
+        .theme-toggle:hover { border-color: var(--button-primary-bg-light); }
+        .dark .theme-toggle:hover { border-color: var(--button-primary-bg-dark); }
+        .loading-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--loader-overlay-bg-light); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999;
+            opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s;
+        }
+        .dark .loading-overlay { background-color: var(--loader-overlay-bg-dark); }
+        .loading-overlay.active { opacity: 1; visibility: visible; transition: opacity 0.3s ease, visibility 0s linear 0s; }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1); border-left-color: var(--button-primary-bg-light);
+            border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite;
+        }
+        .dark .loading-spinner { border-left-color: var(--button-primary-bg-dark); }
+        .loading-text { margin-top: 1rem; font-size: 1rem; color: var(--loader-text-light); }
+        .dark .loading-text { color: var(--loader-text-dark); }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="absolute top-4 right-4">
+        <button id="theme-toggle-button" class="theme-toggle">
+            <span id="theme-icon">☀️</span><span class="sr-only">Toggle theme</span>
+        </button>
+    </div>
+
+    <div class="card w-full max-w-md">
+        <h1 class="text-3xl font-medium text-center text-primary mb-2">Support Our Cause</h1>
+        <p class="text-center text-secondary mb-8">Your generous contribution helps us make a difference.</p>
+
+        <form id="donation-form" class="space-y-6">
+            <div>
+                <label for="amount" class="block text-sm font-medium text-secondary mb-1">Donation Amount</label>
+                <input type="number" id="amount" name="amount" class="input-field" placeholder="e.g., 25" required min="1">
+            </div>
+            <div>
+                <label for="currency" class="block text-sm font-medium text-secondary mb-1">Currency</label>
+                <select id="currency" name="currency" class="select-field">
+                    <option value="usd">USD ($)</option>
+                    <option value="eur">EUR (€)</option>
+                    <option value="gbp">GBP (£)</option>
+                </select>
+                <div id="local-payment-info" class="info-box mt-2 hidden"></div>
+            </div>
+            <div>
+                <label for="donor-note" class="block text-sm font-medium text-secondary mb-1">Note (Optional)</label>
+                <textarea id="donor-note" name="donor-note" class="textarea-field" rows="3" placeholder="e.g., In memory of a loved one, for a specific project, etc."></textarea>
+            </div>
+            <div id="form-errors" role="alert" class="error-message"></div>
+            <button type="submit" id="submit-button" class="button-primary w-full">
+                <span>Proceed to Donation</span>
+            </button>
+        </form>
+        <p class="text-xs text-tertiary text-center mt-6">
+            You will be redirected to Stripe for secure payment.
+        </p>
+    </div>
+
+    <!-- Loading Modal -->
+    <div id="loading-modal" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p id="loading-modal-text" class="loading-text">Hang on! We're securely sending you to Stripe Checkout...</p>
+    </div>
+
+    <script>
+        // --- CONFIGURATION ---
+        const stripePublishableKey = 'pk_live_51R7gg6BLJ39uoFG0y7taqieewyFYrf1xRQg2mQl2XMavixMMO3u0HqAriCyI0VDZ5MOUETlcijNKLN5ecfOXjGXU00LL1rDonk'; // REPLACE
+        const createCheckoutSessionUrl = 'https://donationpay.frank-ruan.com/create-checkout-session'; // REPLACE
+        const successUrl = 'https://donate.frank-ruan.com/donation-success.html'; // REPLACE
+        const cancelUrl = 'https://donate.frank-ruan.com/donation-canceled.html';  // REPLACE
+
+        // --- THEME HANDLING (Identical to previous version) ---
+        const themeToggleButton = document.getElementById('theme-toggle-button');
+        const themeIcon = document.getElementById('theme-icon');
+        const htmlElement = document.documentElement;
+        function setTheme(isDark) {
+            if (isDark) { htmlElement.classList.add('dark'); themeIcon.textContent = '🌙'; localStorage.setItem('theme', 'dark'); }
+            else { htmlElement.classList.remove('dark'); themeIcon.textContent = '☀️'; localStorage.setItem('theme', 'light'); }
+        }
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (savedTheme === 'dark' || (!savedTheme && prefersDark)) { setTheme(true); } else { setTheme(false); }
+        themeToggleButton.addEventListener('click', () => setTheme(!htmlElement.classList.contains('dark')));
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (!localStorage.getItem('theme')) { setTheme(e.matches); }
+        });
+
+        // --- STRIPE AND FORM LOGIC ---
+        const stripe = Stripe(stripePublishableKey);
+        const donationForm = document.getElementById('donation-form');
+        const amountInput = document.getElementById('amount');
+        const currencySelect = document.getElementById('currency');
+        const noteInput = document.getElementById('donor-note'); // Get the new note field
+        const localPaymentInfo = document.getElementById('local-payment-info');
+        const formErrors = document.getElementById('form-errors');
+        const submitButton = document.getElementById('submit-button');
+        const loadingModal = document.getElementById('loading-modal');
+
+        currencySelect.addEventListener('change', function() { updateLocalPaymentInfo(this.value); });
+        function updateLocalPaymentInfo(currency) {
+            const eurText = 'Local bank transfers (e.g., SEPA, iDEAL, Sofort) may be available on the Stripe payment page for EUR.';
+            const usdText = 'Local bank transfers (e.g., ACH) may be available on the Stripe payment page for USD.';
+            if (currency === 'eur') { localPaymentInfo.textContent = eurText; localPaymentInfo.classList.remove('hidden'); }
+            else if (currency === 'usd') { localPaymentInfo.textContent = usdText; localPaymentInfo.classList.remove('hidden'); }
+            else { localPaymentInfo.classList.add('hidden'); }
+        }
+        updateLocalPaymentInfo(currencySelect.value);
+
+        donationForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            setLoadingState(true);
+            formErrors.textContent = '';
+
+            const amount = parseInt(amountInput.value);
+            const currency = currencySelect.value;
+            const note = noteInput.value.trim(); // Get note value
+
+            if (isNaN(amount) || amount <= 0) {
+                formErrors.textContent = 'Please enter a valid donation amount.';
+                setLoadingState(false);
+                return;
+            }
+
+            try {
+                // Prepare payload for the backend, including the note
+                const payload = {
+                    amount,
+                    currency,
+                    note, // Add note to the payload
+                    successUrl,
+                    cancelUrl
+                };
+
+                const response = await fetch(createCheckoutSessionUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+
+                const sessionData = await response.json();
+
+                if (!response.ok || sessionData.error) {
+                    formErrors.textContent = sessionData.error || `Error: ${response.statusText}`;
+                    setLoadingState(false);
+                    return;
+                }
+                if (!sessionData.id) {
+                    formErrors.textContent = 'Could not initiate checkout. Please try again.';
+                    setLoadingState(false);
+                    return;
+                }
+
+                const { error } = await stripe.redirectToCheckout({ sessionId: sessionData.id });
+                if (error) { // This error is usually client-side
+                    console.error('Stripe redirectToCheckout error:', error);
+                    formErrors.textContent = error.message;
+                    setLoadingState(false);
+                }
+            } catch (err) {
+                console.error('Error during checkout process:', err);
+                formErrors.textContent = 'An unexpected error occurred. Please try again.';
+                setLoadingState(false);
+            }
+        });
+
+        function setLoadingState(isLoading) {
+            if (isLoading) {
+                submitButton.disabled = true;
+                loadingModal.classList.add('active');
+            } else {
+                submitButton.disabled = false;
+                setTimeout(() => {
+                    loadingModal.classList.remove('active');
+                }, 300);
+            }
+        }
+    </script>
+</body>
+</html>
