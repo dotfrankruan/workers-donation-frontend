@@ -148,7 +148,7 @@
         <form id="donation-form" class="space-y-6">
             <div>
                 <label for="amount" class="block text-sm font-medium text-secondary mb-1">Donation Amount</label>
-                <input type="number" id="amount" name="amount" class="input-field" placeholder="e.g., 25" required min="0.5">
+                <input type="number" id="amount" name="amount" class="input-field" placeholder="e.g., 25" required min="0.5" step="0.01">
             </div>
             <div>
                 <label for="currency" class="block text-sm font-medium text-secondary mb-1">Currency</label>
@@ -230,12 +230,12 @@
             setLoadingState(true);
             formErrors.textContent = '';
 
-            const amount = parseInt(amountInput.value);
+            const amount = parseFloat(amountInput.value);
             const currency = currencySelect.value;
             const note = noteInput.value.trim(); // Get note value
 
-            if (isNaN(amount) || amount <= 0) {
-                formErrors.textContent = 'Please enter a valid donation amount.';
+            if (isNaN(amount) || amount < 0.5) {
+                formErrors.textContent = 'The minimum donation amount is 0.5.';
                 setLoadingState(false);
                 return;
             }
