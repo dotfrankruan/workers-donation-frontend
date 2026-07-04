@@ -156,6 +156,7 @@
                     <option value="usd">USD ($)</option>
                     <option value="eur">EUR (€)</option>
                     <option value="gbp">GBP (£)</option>
+                    <option value="cny">CNY (¥)</option>
                 </select>
                 <div id="local-payment-info" class="info-box mt-2 hidden"></div>
             </div>
@@ -217,10 +218,12 @@
         function updateLocalPaymentInfo(currency) {
             const eurText = 'Local bank transfers (e.g., SEPA, iDEAL, Sofort) may be available on the Stripe payment page for EUR.';
             const usdText = 'Local bank transfers (e.g., ACH) may be available on the Stripe payment page for USD.';
-            const gbpText = 'Donors from China may choose GBP for payment in Alipay and WeChat Pay.';
+            const gbpText = 'Local bank transfers (e.g., BACS) may be available on the Stripe payment page for GBP.';
+            const cnyText = 'Suitable for Chinese donors — Alipay & WeChat Pay supported.';
             if (currency === 'eur') { localPaymentInfo.textContent = eurText; localPaymentInfo.classList.remove('hidden'); }
             else if (currency === 'usd') { localPaymentInfo.textContent = usdText; localPaymentInfo.classList.remove('hidden'); }
             else if (currency === 'gbp') { localPaymentInfo.textContent = gbpText; localPaymentInfo.classList.remove('hidden'); }
+            else if (currency === 'cny') { localPaymentInfo.textContent = cnyText; localPaymentInfo.classList.remove('hidden'); }
             else { localPaymentInfo.classList.add('hidden'); }
         }
         updateLocalPaymentInfo(currencySelect.value);
